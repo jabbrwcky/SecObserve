@@ -45,7 +45,7 @@ jobs:
           file: ./docker/backend/prod/django/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/secobserve/secobserve-backend:dev
+          tags: ghcr.io/${{ env.REPO_OWNER }}/secobserve-backend:dev
           build-args: |
             CREATED=${{ env.CREATED }}
             REVISION=${{ github.sha }}
@@ -91,7 +91,7 @@ jobs:
           file: ./docker/frontend/prod/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/${{ env.REPO_OWNER }}}/secobserve-frontend:dev
+          tags: ghcr.io/${{ env.REPO_OWNER }}/secobserve-frontend:dev
           build-args: |
             CREATED=${{ env.CREATED }}
             REVISION=${{ github.sha }}
