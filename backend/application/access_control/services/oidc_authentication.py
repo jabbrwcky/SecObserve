@@ -94,7 +94,7 @@ class OIDCAuthentication(BaseAuthentication):
                 method="GET",
                 url=f"{os.environ['OIDC_AUTHORITY']}/.well-known/openid-configuration",
                 timeout=60,
-                retries=3,
+                stream=False,
             )
             response.raise_for_status()
             jwks_uri = response.json()["jwks_uri"]
