@@ -1,7 +1,6 @@
 from json import loads
 
-import requests
-
+from application.commons.http import get_requests_session
 from application.licenses.models import License, License_Group, License_Group_Member
 
 
@@ -25,7 +24,7 @@ def copy_license_group(source_license_group: License_Group, name: str) -> Licens
 def import_scancode_licensedb() -> None:
     license_groups: dict[str, License_Group] = {}
 
-    response = requests.get("https://scancode-licensedb.aboutcode.org/index.json", timeout=60, stream=True)
+    response = get_requests_session().get("https://scancode-licensedb.aboutcode.org/index.json", timeout=60, stream=True)
     response.raise_for_status()
     data = loads(response.content)
 

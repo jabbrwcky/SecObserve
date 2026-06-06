@@ -1,8 +1,7 @@
 import json
 from typing import Optional
 
-import requests
-
+from application.commons.http import get_requests_session
 from application.core.models import Branch, Observation, Product
 from application.core.types import Severity, Status
 from application.import_observations.models import Api_Configuration
@@ -51,7 +50,7 @@ class DependencyTrack(BaseParser, BaseAPIParser):
             "X-Api-Key": dependency_track_api_key,
         }
         try:
-            response = requests.get(
+            response = get_requests_session().get(
                 dependency_track_base_url,
                 headers=headers,
                 timeout=60,
@@ -149,7 +148,7 @@ class DependencyTrack(BaseParser, BaseAPIParser):
         dependency_track_base_url += "api/version"
 
         try:
-            response = requests.get(
+            response = get_requests_session().get(
                 dependency_track_base_url,
                 timeout=60,
                 verify=dependency_track_verify_ssl,

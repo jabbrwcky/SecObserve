@@ -3,7 +3,8 @@ from datetime import datetime
 from typing import Optional, Tuple
 
 import jsonpickle
-import requests
+
+from application.commons.http import get_requests_session
 
 from application.commons.models import Settings
 from application.core.models import Branch, Product, Service
@@ -222,7 +223,7 @@ def _do_scan(
             ]
         )
 
-        response = requests.post(  # nosec B113
+        response = get_requests_session().post(  # nosec B113
             # This is a false positive, there is a timeout of 5 minutes
             url="https://api.osv.dev/v1/querybatch",
             data=jsonpickle.encode(queries, unpicklable=False),

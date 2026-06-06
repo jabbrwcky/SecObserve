@@ -1,7 +1,6 @@
 from json import loads
 
-import requests
-
+from application.commons.http import get_requests_session
 from application.licenses.models import License
 
 
@@ -10,7 +9,7 @@ def import_licenses() -> str:
     licenses_updated = 0
     licenses_created = 0
 
-    response = requests.get(
+    response = get_requests_session().get(
         "https://raw.githubusercontent.com/spdx/license-list-data/refs/heads/main/json/licenses.json",
         timeout=60,
         stream=True,

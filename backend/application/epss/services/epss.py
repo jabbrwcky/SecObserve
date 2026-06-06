@@ -2,8 +2,9 @@ import gzip
 import re
 from datetime import datetime
 
-import requests
 from django.core.paginator import Paginator
+
+from application.commons.http import get_requests_session
 
 from application.core.models import Observation
 from application.core.types import Status
@@ -11,7 +12,7 @@ from application.epss.models import EPSS_Score, EPSS_Status
 
 
 def import_epss() -> str:
-    response = requests.get(
+    response = get_requests_session().get(
         "https://epss.cyentia.com/epss_scores-current.csv.gz",
         timeout=60,
         stream=True,

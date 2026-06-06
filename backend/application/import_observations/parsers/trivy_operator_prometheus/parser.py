@@ -2,8 +2,7 @@ import json
 from dataclasses import dataclass
 from typing import Any, Optional
 
-import requests
-
+from application.commons.http import get_requests_session
 from application.core.models import Branch, Observation, Product
 from application.core.types import Severity
 from application.import_observations.models import Api_Configuration
@@ -58,7 +57,7 @@ class TrivyOperatorPrometheus(BaseParser, BaseAPIParser):
             )
 
         try:
-            response = requests.get(
+            response = get_requests_session().get(
                 trivy_operator_prometheus_url,
                 timeout=60,
                 verify=trivy_operator_prometheus_verify_ssl,

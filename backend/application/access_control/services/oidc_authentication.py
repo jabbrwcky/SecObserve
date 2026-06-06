@@ -3,7 +3,7 @@ import os
 import re
 from typing import Optional
 
-import requests
+from application.commons.http import get_requests_session
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from jwt.api_jwt import decode
@@ -90,11 +90,10 @@ class OIDCAuthentication(BaseAuthentication):
     def _get_jwks_uri(self) -> str:
         jwks_uri = cache.get("jwks_uri")
         if not jwks_uri:
-            response = requests.request(
+            response = get_requests_session().request(
                 method="GET",
                 url=f"{os.environ['OIDC_AUTHORITY']}/.well-known/openid-configuration",
                 timeout=60,
-                stream=False,
             )
             response.raise_for_status()
             jwks_uri = response.json()["jwks_uri"]

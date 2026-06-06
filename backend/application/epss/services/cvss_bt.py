@@ -2,7 +2,7 @@ import csv
 import logging
 from typing import Optional
 
-import requests
+from application.commons.http import get_requests_session
 from cvss import CVSS3, CVSS4
 from cvss.exceptions import CVSSError
 from django.core.paginator import Paginator
@@ -19,7 +19,7 @@ logger = logging.getLogger("secobserve.epss")
 
 
 def import_cvss_bt() -> str:
-    response = requests.get(  # nosec B113
+    response = get_requests_session().get(  # nosec B113
         # This is a false positive, there is a timeout of 5 minutes
         "https://raw.githubusercontent.com/t0sche/cvss-bt/refs/heads/main/cvss-bt.csv",
         timeout=5 * 60,

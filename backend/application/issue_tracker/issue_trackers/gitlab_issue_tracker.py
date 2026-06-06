@@ -1,8 +1,7 @@
 import urllib.parse
 from typing import Optional
 
-import requests
-
+from application.commons.http import get_requests_session
 from application.core.models import Observation, Product
 from application.issue_tracker.issue_trackers.base_issue_tracker import (
     BaseIssueTracker,
@@ -19,7 +18,7 @@ class GitLabIssueTracker(BaseIssueTracker):
         }
         if observation.product.issue_tracker_labels:
             data["labels"] = observation.product.issue_tracker_labels
-        response = requests.post(
+        response = get_requests_session().post(
             url=self._get_issue_tracker_base_url(observation.product),
             headers=self._get_headers(observation.product),
             data=data,
@@ -29,7 +28,7 @@ class GitLabIssueTracker(BaseIssueTracker):
         return response.json().get("iid")
 
     def get_issue(self, product: Product, issue_id: str) -> Optional[Issue]:
-        response = requests.get(
+        response = get_requests_session().get(
             url=f"{self._get_issue_tracker_base_url(product)}/{issue_id}",
             headers=self._get_headers(product),
             timeout=60,
@@ -59,7 +58,7 @@ class GitLabIssueTracker(BaseIssueTracker):
         }
         if observation.product.issue_tracker_labels:
             data["add_labels"] = observation.product.issue_tracker_labels
-        response = requests.put(
+        response = get_requests_session().put(
             url=f"{self._get_issue_tracker_base_url(observation.product)}/{observation.issue_tracker_issue_id}",
             headers=self._get_headers(observation.product),
             data=data,
@@ -82,7 +81,7 @@ class GitLabIssueTracker(BaseIssueTracker):
         }
         if observation.product.issue_tracker_labels:
             data["add_labels"] = observation.product.issue_tracker_labels
-        response = requests.put(
+        response = get_requests_session().put(
             url=f"{self._get_issue_tracker_base_url(observation.product)}/{observation.issue_tracker_issue_id}",
             headers=self._get_headers(observation.product),
             data=data,
@@ -98,7 +97,7 @@ class GitLabIssueTracker(BaseIssueTracker):
         }
         if product.issue_tracker_labels:
             data["add_labels"] = product.issue_tracker_labels
-        response = requests.put(
+        response = get_requests_session().put(
             url=f"{self._get_issue_tracker_base_url(product)}/{issue.id}",
             headers=self._get_headers(product),
             data=data,

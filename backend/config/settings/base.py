@@ -459,3 +459,10 @@ HUEY = {
         "health_check_interval": 60,  # Check worker health every second.
     },
 }
+
+# HTTP CLIENT
+# ------------------------------------------------------------------------------
+# Number of retries for outgoing HTTP requests (0 = disabled).
+HTTP_RETRIES = env.int("HTTP_RETRIES", default=0)
+# Disable HTTP keep-alive for outgoing requests (adds Connection: close header).
+HTTP_DISABLE_KEEPALIVE = env.bool("HTTP_DISABLE_KEEPALIVE", default=False)

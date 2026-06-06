@@ -5,7 +5,7 @@ from datetime import datetime
 from json import dumps, loads
 from typing import Callable, Optional
 
-import requests
+from application.commons.http import get_requests_session
 from packageurl import PackageURL
 
 from application.core.models import Branch, Observation, Product
@@ -181,7 +181,7 @@ class OSVParser(BaseParser):
                 missing_osv_vulnerabilities.append(osv_vulnerability)
 
         def _read_osv_vulnerability(osv_vulnerability: OSV_Vulnerability) -> OSV_Cache:
-            response = requests.get(
+            response = get_requests_session().get(
                 url=f"https://api.osv.dev/v1/vulns/{osv_vulnerability.id}",
                 timeout=60,
             )

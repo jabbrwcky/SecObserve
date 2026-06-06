@@ -2,8 +2,9 @@ import logging
 from typing import Any, Optional
 
 import environ
-import requests
 from django.core.mail import send_mail
+
+from application.commons.http import get_requests_session
 from django.template.loader import render_to_string
 from huey.contrib.djhuey import db_task, task
 
@@ -42,7 +43,7 @@ def send_msteams_notification(webhook: str, template: str, **kwargs: Any) -> Non
     if notification_message:
         notification_message = notification_message.replace("&quot;", '\\"')
         try:
-            response = requests.request(
+            response = get_requests_session().request(
                 method="POST",
                 url=webhook,
                 data=notification_message,
@@ -65,7 +66,7 @@ def send_slack_notification(webhook: str, template: str, **kwargs: Any) -> None:
         notification_message = notification_message.replace("&#x27;", "\\'")
         notification_message = notification_message.replace("&quot;", '\\"')
         try:
-            response = requests.request(
+            response = get_requests_session().request(
                 method="POST",
                 url=webhook,
                 data=notification_message,
