@@ -22,6 +22,7 @@ services:
     image: secobserve_backend_dev
     depends_on:
       - postgres
+      - opa
     environment:
       # --- Admin user ---
       ADMIN_USER: ${SO_ADMIN_USER:-admin}
@@ -41,6 +42,7 @@ services:
       FIELD_ENCRYPTION_KEY: ${SO_FIELD_ENCRYPTION_KEY:-DtlkqVb3wlaVdJK_BU-3mB4wwuuf8xx8YNInajiJ7GU=}
       # --- Development ---
       USE_DOCKER: yes
+      OPA_SERVER_URL: http://opa:8181
     volumes:
       - ./backend:/app
       - dev_huey_data:/var/lib/huey
@@ -57,6 +59,13 @@ services:
       POSTGRES_PASSWORD: ${SO_POSTGRES_PASSWORD:-secobserve}
     ports:
       - "5432:5432"
+
+  opa:
+    image: openpolicyagent/opa:1.17.1
+    profiles:
+      - opa
+    ports:
+      - "8081:8081"
 
   mailhog:
     image: mailhog/mailhog:v1.0.1

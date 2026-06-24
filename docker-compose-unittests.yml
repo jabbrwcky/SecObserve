@@ -1,9 +1,26 @@
 services:
+  opa:
+    image: openpolicyagent/opa:latest-debug
+    command:
+      - run
+      - --server
+      - --addr=:8181
+      - --diagnostic-addr=:8082
+      - --log-level=debug
+
+    # healthcheck:
+    #   test: wget -qO - http://localhost:8082/health || exit 1
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 5
+
   django:
     build:
       context: .
       dockerfile: ./docker/backend/unittests/django/Dockerfile
     image: secobserve_backend_unittests
+    depends_on:
+      - opa
     environment:
       # --- Django ---
       DJANGO_DEBUG: "True"
@@ -27,5 +44,7 @@ services:
       OIDC_FULL_NAME: name
       OIDC_EMAIL: email
       OIDC_GROUPS: groups
+      # --- OPA ---
+      OPA_SERVER_URL: http://opa:8181
     volumes:
       - ./backend:/home

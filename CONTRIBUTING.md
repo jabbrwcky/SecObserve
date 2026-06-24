@@ -90,7 +90,7 @@ All new features and bug fixes in the backend shall be accompanied by unit tests
 
 ```bash
 docker compose -f docker-compose-unittests.yml build
-docker compose -f docker-compose-unittests.yml up
+docker compose -f docker-compose-unittests.yml --exit-code-from django up
 ```
 
 from the root directory of the project.

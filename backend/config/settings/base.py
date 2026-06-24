@@ -431,6 +431,13 @@ SPECTACULAR_SETTINGS = {
 
 FIELD_ENCRYPTION_KEY = env("FIELD_ENCRYPTION_KEY")
 
+# Rego rule evaluation. By default the embedded `regopy` interpreter is used.
+# `regopy` is not available on ARM64, so an external OPA server is used as a
+# fallback there (or whenever OPA_USE_SERVER is set explicitly).
+OPA_USE_SERVER = env.bool("OPA_USE_SERVER", default=False)
+OPA_SERVER_URL = env("OPA_SERVER_URL", default="http://localhost:8181")
+OPA_SERVER_TIMEOUT = env.int("OPA_SERVER_TIMEOUT", default=60)
+
 HUEY_FILENAME = env("HUEY_FILENAME", default="/var/lib/huey/huey.db")
 
 HUEY_IMMEDIATE = env.bool("HUEY_IMMEDIATE", False)
