@@ -1,0 +1,54 @@
+# Compose stack for the unified VS Code devcontainer.
+# `workspace` holds the full repo and both toolchains; postgres + opa back the
+# Django app at runtime. Servers are started manually (see README/.devcontainer).
+volumes:
+  devcontainer_postgres_data:
+  devcontainer_huey_data:
+
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: ./docker/devcontainer/Dockerfile
+    image: secobserve_devcontainer
+    # Keep the container running; VS Code attaches and runs commands in it.
+    command: sleep infinity
+    depends_on:
+      - postgres
+      - opa
+    volumes:
+      - .:/workspace:cached
+      - devcontainer_huey_data:/var/lib/huey
+    environment:
+      # --- Admin user ---
+      ADMIN_USER: ${SO_ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${SO_ADMIN_PASSWORD:-admin}
+      ADMIN_EMAIL: ${SO_ADMIN_EMAIL:-admin@example.com}
+      # --- Database ---
+      DATABASE_ENGINE: ${SO_DATABASE_ENGINE:-django.db.backends.postgresql}
+      DATABASE_HOST: ${SO_DATABASE_HOST:-postgres}
+      DATABASE_PORT: ${SO_DATABASE_PORT:-5432}
+      DATABASE_DB: ${SO_DATABASE_DB:-secobserve}
+      DATABASE_USER: ${SO_DATABASE_USER:-secobserve}
+      DATABASE_PASSWORD: ${SO_DATABASE_PASSWORD:-secobserve}
+      # --- Security ---
+      ALLOWED_HOSTS: ${SO_ALLOWED_HOSTS:-localhost}
+      CORS_ALLOWED_ORIGINS: ${SO_CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      DJANGO_SECRET_KEY: ${SO_DJANGO_SECRET_KEY:-NxYPEF5lNGgk3yonndjSbwP77uNJxOvfKTjF5aVBqsHktNlf1wfJHHvJ8iifk32r}
+      FIELD_ENCRYPTION_KEY: ${SO_FIELD_ENCRYPTION_KEY:-DtlkqVb3wlaVdJK_BU-3mB4wwuuf8xx8YNInajiJ7GU=}
+      # --- Development ---
+      USE_DOCKER: yes
+      OPA_SERVER_URL: http://opa:8181
+
+  postgres:
+    image: postgres:15.18-alpine
+    volumes:
+      - devcontainer_postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${SO_POSTGRES_DB:-secobserve}
+      POSTGRES_USER: ${SO_POSTGRES_USER:-secobserve}
+      POSTGRES_PASSWORD: ${SO_POSTGRES_PASSWORD:-secobserve}
+
+  opa:
+    image: openpolicyagent/opa:1.17.1
+    command: ["run", "--server", "--addr", "0.0.0.0:8181"]

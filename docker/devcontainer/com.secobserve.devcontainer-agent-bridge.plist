@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  LaunchAgent template: runs the host SSH agent bridge at login so the
+  SecObserve devcontainer can reach the host agent (e.g. Secretive).
+
+  Do not load this template directly: __SCRIPT_PATH__ / __LOG_DIR__ are
+  placeholders. Run bin/install-agent-bridge-launchagent.sh to generate the
+  real plist into ~/Library/LaunchAgents and load it.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.secobserve.devcontainer-agent-bridge</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/sh</string>
+        <string>__SCRIPT_PATH__</string>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <!-- Must match HOST_AGENT_PORT in .devcontainer/devcontainer.json. -->
+        <key>DEVCONTAINER_AGENT_PORT</key>
+        <string>17654</string>
+        <!-- launchd has a minimal PATH; ensure socat/python3 are findable. -->
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>__LOG_DIR__/devcontainer-agent-bridge.log</string>
+    <key>StandardErrorPath</key>
+    <string>__LOG_DIR__/devcontainer-agent-bridge.log</string>
+</dict>
+</plist>

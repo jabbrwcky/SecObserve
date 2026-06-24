@@ -1,0 +1,77 @@
+{
+    "name": "SecObserve Dev (backend + frontend)",
+    "dockerComposeFile": ["../docker-compose-devcontainer.yml"],
+    "service": "workspace",
+    "workspaceFolder": "/workspace",
+    "overrideCommand": false,
+    // Run as the non-root "dc" user created in the Dockerfile.
+    "remoteUser": "dc",
+    "containerUser": "dc",
+    "updateRemoteUserUID": true,
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "26"
+        }
+    },
+    "remoteEnv": {
+        // Project-pinned frontend binaries (prettier, eslint, vite, ...) on PATH.
+        "PATH": "/workspace/frontend/node_modules/.bin:${containerEnv:PATH}",
+        // ssh/git use the relay socket created by ssh-agent-relay.sh, which
+        // forwards to the host agent (Secretive) exposed on this port.
+        "SSH_AUTH_SOCK": "/tmp/ssh-agent-relay.sock",
+        "HOST_AGENT_PORT": "17654"
+    },
+    "forwardPorts": [3000, 8000, 5432, 8181],
+    "portsAttributes": {
+        "3000": {
+            "label": "Frontend",
+            "onAutoForward": "notify"
+        },
+        "8000": {
+            "label": "Backend API",
+            "onAutoForward": "notify"
+        },
+        "5432": {
+            "label": "PostgreSQL",
+            "onAutoForward": "silent"
+        },
+        "8181": {
+            "label": "OPA",
+            "onAutoForward": "silent"
+        }
+    },
+    // Backend deps are baked into the image; install the frontend deps after create.
+    "postCreateCommand": "cd frontend && npm install --no-audit --no-fund",
+    // Start (or restart) the SSH agent relay to the host agent on each container start.
+    // The relay script `exec`s into socat, so its process command line no longer
+    // contains "ssh-agent-relay.sh" — match the live socat by its socket path.
+    "postStartCommand": "bash -c 'pgrep -f \"socat.*ssh-agent-relay.sock\" >/dev/null || (nohup /usr/local/bin/ssh-agent-relay.sh >/tmp/ssh-agent-relay.log 2>&1 &)'",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.debugpy",
+                "charliermarsh.ruff",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "mtxr.sqltools",
+                "mtxr.sqltools-driver-pg"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.terminal.activateEnvironment": false,
+                "[python]": {
+                    "editor.formatOnSave": true,
+                    "editor.defaultFormatter": "ms-python.vscode-pylance"
+                },
+                "[typescript]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[typescriptreact]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                }
+            }
+        }
+    }
+}
