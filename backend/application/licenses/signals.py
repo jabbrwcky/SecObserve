@@ -41,6 +41,11 @@ def license_component_post_save(  # pylint: disable=unused-argument
     sender: Any, instance: License_Component, created: bool, **kwargs: Any
 ) -> None:
     # sender is needed according to Django documentation
+    # Don't react to objects loaded from fixtures (loaddata), otherwise the
+    # product's last_license_change would be overwritten with the current time.
+    if kwargs.get("raw"):
+        return
+
     if created or "evaluation_result" in instance.get_dirty_fields().keys():
         instance.product.last_license_change = timezone.now()
         instance.product.save()
